@@ -1,0 +1,133 @@
+import simple_code_text as sct
+import math
+from math import factorial as fact
+import numpy as np
+
+
+def C(k: int, m: int):
+    """Число сочетаний"""
+    return fact(m) / (fact(m - k) * fact(k))
+
+
+def get_key(d, value):
+    """Возвращает ключ по значению"""
+    for k, v in d.items():
+        if v == value:
+            return k
+
+
+def encode(text: str, code: dict):
+    """Кодирует текст с проверкой на чётность (каждый третий символ)."""
+
+    quantum = 3 # так как первый вариант
+    coded = ""
+    symbols = ""
+
+    for i in range(len(text)):
+        symbols += text[i]
+        coded += code[text[i]]
+
+        # Проверка на четность
+        if i % quantum == 0:
+            # Вычисление y1 ^ y2 ^ y3
+            dig = int(symbols[0], 2)
+            for sym in symbols[1:]:
+                dig ^= int(sym, 2)
+
+            coded += f"{bin(dig)[2:]}".zfill( max( [len(x) for x in symbols] ) ) # Прибавляем y1 ^ y2 ^ y3
+            symbols = "" # Очищаем буфер
+
+    return coded
+
+
+def decode(text_coded: str, dict_coded: dict):
+    """Декодирует текст с проверкой на четность (каждый 3-ий).
+    Возвращает текст и список позиций, в каком блоке ошибка"""
+    errors = []
+    per = 3     # Сколько символов участвовало в xor
+    decoded = ""   # Декодированный текст
+    codes = ""  # Последние per декодированные буквы
+    min_q = min( [len(x) for x in dict_coded.values()] ) # Минимальное количество закодированных символов
+    pos = 0     # Текущая позиция
+    q = min_q   # Текущее количество символов кода
+
+    while len(text_coded) > pos:
+        if len(codes) % per == 0:
+            # Список для легкого поиска максимальной длины кодвого слова
+            dict_elem = [dict_coded[codes[0]]]
+            xor = int(dict_elem[0], 2)
+
+            # Находим xor
+            for s in codes[1:]:
+                dict_elem.append(dict_coded[s])
+                xor ^= int(dict_elem[-1], 2)
+
+            # Приводим проверочный вид к единому виду
+            max_len = max(dict_elem)
+            xor = str(bin(xor)[2:]).zfill( max_len )
+            substring = text_coded[pos: pos + max_len]
+            pos += max_len
+
+            if xor != substring:
+                errors.append(pos)
+        else:
+            substring = text_coded[pos: pos + q]
+            if substring in dict_coded.values():
+                sym = get_key(dict_coded, substring)
+                decoded += sym
+                codes += sym
+                pos += q
+                q = min_q
+            else:
+                q += 1
+
+    return decoded, errors
+
+
+def hamming_metrics(first: str, second: str):
+    """Расстояние Хэмминга между двумя закодированными словами одинаковой длины"""
+    if len(first) != len(second):
+        raise ValueError("Переданы слова разной длины.")
+    return sum([x1 != x2 for x1, x2 in zip(first, second)])
+
+
+def d0 (dict_coded: dict):
+    """Минимальное расстояние Хэмминга между закодированными словами
+    Возможна ошибка из-за функции расстояния Хэмминга"""
+    list_differences = []
+    list_coded = dict_coded.values()
+    for i, word1 in enumerate(list_coded):
+        for word2 in list_coded[i + 1:]:
+            list_differences.append(hamming_metrics(word1, word2))
+
+    return min(list_differences)
+
+
+def hamming_boundary(n: int, k: int, q0: int):
+    """Граница Хэмминга - это выражение является нижней границей в том смысле, что оно устанавливает то минимальное
+    соотношение корректирующих и информационных разрядов, ниже которого код не может сохранять заданные корректирующие
+    способности.
+    Возвращает: выполнено ли условие и значение правой части"""
+    right = math.log2(sum([C(i, n) for i in range(q0)]))
+    return n - k <= right, right
+
+
+def plotkin_boundary(d_0: int, n: int, k: int):
+    """Граница Плоткина, задающая минимальную избыточность, при которой существует помехоустойчивый код, имеющий
+    минимальное кодовое расстояние и гарантированно исправляющий q-кратные ошибки
+    Возвращает: выполнено ли условие и значение правой части"""
+    right = n * 2**(k - 1)/(2**k - 1)
+    return d_0 <= right, right
+
+
+def varshamov_gilbert_boundary (n: int, k: int, d_0: int):
+    """Является нижней границей для числа проверочных разрядов r=n-k в случае кодов большой разрядности, необходимого
+    для обеспечения заданного кодового расстояния d_0.
+    Возвращает: выполнено ли условие и значение правой части"""
+    right = sum([C(i, n - 1) for i in range(0, d_0 - 1)])
+    return 2**(n - k) > right, right
+
+
+def hamming_encode(text: str, dict_coded: dict, matrix: np.ndarray):
+    """Кодирование текста по алгоритму Хэмминга"""
+    pass
