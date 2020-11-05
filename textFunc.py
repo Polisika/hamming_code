@@ -177,7 +177,8 @@ def hamming_decode(code_text: list, dict_coded: dict, H: np.ndarray, k: int):
             substring = substring[:err_pos] + str(0 if v[err_pos] == 1 else 1) + substring[err_pos + 1:]
         if not (substring in dict_coded.values()):
             decoded.append('e')
-        decoded.append(get_key(dict_coded, substring))
+        else:
+            decoded.append(get_key(dict_coded, substring))
 
     return decoded, err_dict
 
