@@ -33,20 +33,16 @@ decode_Haffman = sg.Output(size=(25, 10))
 errors_Haffman = sg.Output(size=(25, 10))
 
 layout = [
-    [sg.Text('Input text from file:')],
+    [sg.Text('Текст из файла:')],
     [sg.InputText(), sg.FileBrowse(), sg.Submit('Input')],
     [sg.Text('Введите текст для шифрования')],
-    [code_text],
-    [sg.Text('Закодированный кодом Хэмминга', size=(30, 1), justification='left'), sg.Text('Хаффмана', size=(15, 1), justification='right')],
-    [code_Hamming, code_Haffman],
-    [sg.Text('Декодированный Хэмминг', size=(20, 1), justification='left'), sg.Text('Хаффман', size=(25, 1), justification='right')],
-    [sg.Submit('Decode')],
-    [decode_Hamming, decode_Haffman],
-    [sg.Text('Список исправленных ошибок  /  обнаруженных (Хаффман)', size=(50, 1), justification='left')],
-    [errors_Hamming, errors_Haffman],
-    [sg.Text('Исследования', size=(20, 1), justification='left')],
-    [research, research_haffman],
-    [sg.Submit('Run', size=(25, 1))],
+    [code_text, sg.Submit('Run')],
+    [sg.Text('Кодирование', size=(24, 1)), sg.Text('Декодирование', size=(24, 1)), sg.Text('Ошибки', size=(24, 1)), sg.Text('Исследования', size=(24, 1))],
+    [sg.Text('Хэмминг', size=(30, 1), justification='left')],
+    [code_Hamming, decode_Hamming, errors_Hamming, research],
+    [sg.Text('Хаффман', size=(20, 1), justification='left')],
+    [code_Haffman, decode_Haffman, errors_Haffman],
+    [sg.Submit('Decode', size=(25, 1))],
 ]
 
 window = sg.Window('3 Lab', layout)
@@ -84,13 +80,13 @@ while True:
                     textFunc.varshamov_gilbert_boundary(n, k, d0),
                 ))
 
-                d0 = textFunc.min_hamming_metrics(dict_coded)
-                research_haffman.update(layout_research.format(
-                    d0,
-                    0,
-                    0,
-                    textFunc.varshamov_gilbert_boundary(n, n, d0),
-                ))
+                #d0 = textFunc.min_hamming_metrics(dict_coded)
+                #research_haffman.update(layout_research.format(
+                #  d0,
+                #  0,
+                #  0,
+                #  textFunc.varshamov_gilbert_boundary(n, n, d0),
+                #))
             else:
                 errors_Hamming.update('Введите текст в соотстветствующее поле')
         elif event == 'Decode':

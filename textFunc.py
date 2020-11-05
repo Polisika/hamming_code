@@ -102,7 +102,7 @@ def hamming_boundary(n: int, k: int, q0: int):
     способности.
     Возвращает: выполнено ли условие и значение правой части"""
 
-    right = math.log2(sum([C(i, n) for i in range(q0)]))
+    right = math.log2(sum([C(i, n) for i in range(1, q0 + 1)]))
     return n - k <= right, right
 
 
@@ -111,7 +111,7 @@ def plotkin_boundary(d_0: int, n: int, k: int):
     минимальное кодовое расстояние и гарантированно исправляющий q-кратные ошибки
     Возвращает: выполнено ли условие и значение правой части"""
     right = n * 2**(k - 1)/(2**k - 1)
-    return n + k >= right if n >= 2*d_0 - 1 else False, right
+    return d_0 >= right if n >= 2*d_0 - 1 else False, right
 
 
 def varshamov_gilbert_boundary (n: int, k: int, d_0: int):
