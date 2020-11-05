@@ -87,8 +87,8 @@ while True:
                 d0 = textFunc.min_hamming_metrics(dict_coded)
                 research_haffman.update(layout_research.format(
                     d0,
-                    textFunc.hamming_boundary(n, n, 0),
-                    textFunc.plotkin_boundary(d0, n, n),
+                    0,
+                    0,
                     textFunc.varshamov_gilbert_boundary(n, n, d0),
                 ))
             else:
