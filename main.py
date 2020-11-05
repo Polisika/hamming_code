@@ -26,6 +26,7 @@ code_Hamming = sg.Output(size=(25, 10))
 decode_Hamming = sg.Output(size=(25, 10))
 errors_Hamming = sg.Output(size=(25, 10))
 research = sg.Output(size=(25, 10))
+research_haffman = sg.Output(size=(25, 10))
 
 code_Haffman = sg.Output(size=(25, 10))
 decode_Haffman = sg.Output(size=(25, 10))
@@ -44,7 +45,8 @@ layout = [
     [sg.Text('Список исправленных ошибок  /  обнаруженных (Хаффман)', size=(50, 1), justification='left')],
     [errors_Hamming, errors_Haffman],
     [sg.Text('Исследования', size=(20, 1), justification='left')],
-    [research, sg.Submit('Run', size=(25, 10))],
+    [research, research_haffman],
+    [sg.Submit('Run', size=(25, 1))],
 ]
 
 window = sg.Window('3 Lab', layout)
@@ -80,6 +82,14 @@ while True:
                     textFunc.hamming_boundary(n, k, 1),
                     textFunc.plotkin_boundary(d0, n, k),
                     textFunc.varshamov_gilbert_boundary(n, k, d0),
+                ))
+
+                d0 = textFunc.min_hamming_metrics(dict_coded)
+                research_haffman.update(layout_research.format(
+                    d0,
+                    textFunc.hamming_boundary(n, n, 0),
+                    textFunc.plotkin_boundary(d0, n, n),
+                    textFunc.varshamov_gilbert_boundary(n, n, d0),
                 ))
             else:
                 errors_Hamming.update('Введите текст в соотстветствующее поле')
